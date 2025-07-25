@@ -1,27 +1,21 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from '~/components/ui/dialog'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+
+import LoginForm from '~/components/forms/login'
+import AuthLayout from '~/layouts/auth'
+
+const router = createBrowserRouter([
+  {
+    path: '/login',
+    element: (
+      <AuthLayout>
+        <LoginForm />
+      </AuthLayout>
+    )
+  }
+])
 
 function App() {
-  return (
-    <Dialog>
-      <DialogTrigger>Open</DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Are you absolutely sure?</DialogTitle>
-          <DialogDescription>
-            This action cannot be undone. This will permanently delete your account and remove your data from our
-            servers.
-          </DialogDescription>
-        </DialogHeader>
-      </DialogContent>
-    </Dialog>
-  )
+  return <RouterProvider router={router} />
 }
 
 export default App
