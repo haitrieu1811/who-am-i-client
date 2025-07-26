@@ -5,6 +5,7 @@ import LoginForm from '~/components/forms/login'
 import PATH from '~/constants/path'
 import { AppContext } from '~/contexts/app.context'
 import AuthLayout from '~/layouts/auth'
+import DashboardLayout from '~/layouts/dashboard'
 import DashboardPage from '~/pages/dashboard'
 import HomePage from '~/pages/home'
 
@@ -29,7 +30,11 @@ const router = createBrowserRouter([
     children: [
       {
         path: PATH.DASHBOARD,
-        element: <DashboardPage />
+        element: (
+          <DashboardLayout>
+            <DashboardPage />
+          </DashboardLayout>
+        )
       }
     ]
   },
