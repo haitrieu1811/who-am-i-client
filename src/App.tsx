@@ -7,6 +7,7 @@ import { AppContext } from '~/contexts/app.context'
 import AuthLayout from '~/layouts/auth'
 import DashboardLayout from '~/layouts/dashboard'
 import DashboardPage from '~/pages/dashboard'
+import DashboardLeaguesPage from '~/pages/dashboard/leagues'
 import DashboardNationsPage from '~/pages/dashboard/nations'
 import HomePage from '~/pages/home'
 
@@ -42,6 +43,14 @@ const router = createBrowserRouter([
         element: (
           <DashboardLayout>
             <DashboardNationsPage />
+          </DashboardLayout>
+        )
+      },
+      {
+        path: PATH.DASHBOARD_LEAGUES,
+        element: (
+          <DashboardLayout>
+            <DashboardLeaguesPage />
           </DashboardLayout>
         )
       }

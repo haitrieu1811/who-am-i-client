@@ -24,7 +24,7 @@ const items = [
   },
   {
     title: 'Giải đấu',
-    url: '#',
+    url: PATH.DASHBOARD_LEAGUES,
     icon: Trophy
   },
   {
