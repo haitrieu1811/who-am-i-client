@@ -8,12 +8,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main className='w-full'>
-        <div className='flex justify-between items-center p-4'>
+      <main className='w-full p-4'>
+        <div className='flex justify-between items-center'>
           <SidebarTrigger />
           <ModeToggle />
         </div>
-        {children}
+        <div className='pt-4'>{children}</div>
       </main>
     </SidebarProvider>
   )

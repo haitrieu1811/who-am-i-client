@@ -1,5 +1,5 @@
 import { CircleQuestionMark, FileQuestionMark, Flag, Shirt, Trophy, User } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 import {
   Sidebar,
@@ -13,12 +13,13 @@ import {
   SidebarMenuItem
 } from '~/components/ui/sidebar'
 import PATH from '~/constants/path'
+import { cn } from '~/lib/utils'
 
 // Menu items.
 const items = [
   {
     title: 'Quốc gia',
-    url: '#',
+    url: PATH.DASHBOARD_NATIONS,
     icon: Flag
   },
   {
@@ -44,6 +45,7 @@ const items = [
 ]
 
 export default function AppSidebar() {
+  const location = useLocation()
   return (
     <Sidebar>
       <SidebarHeader>
@@ -71,10 +73,15 @@ export default function AppSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
+                    <Link
+                      to={item.url}
+                      className={cn({
+                        'bg-muted pointer-events-none': item.url === location.pathname
+                      })}
+                    >
                       <item.icon />
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

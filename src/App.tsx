@@ -7,6 +7,7 @@ import { AppContext } from '~/contexts/app.context'
 import AuthLayout from '~/layouts/auth'
 import DashboardLayout from '~/layouts/dashboard'
 import DashboardPage from '~/pages/dashboard'
+import DashboardNationsPage from '~/pages/dashboard/nations'
 import HomePage from '~/pages/home'
 
 const ProtectedRoute = () => {
@@ -33,6 +34,14 @@ const router = createBrowserRouter([
         element: (
           <DashboardLayout>
             <DashboardPage />
+          </DashboardLayout>
+        )
+      },
+      {
+        path: PATH.DASHBOARD_NATIONS,
+        element: (
+          <DashboardLayout>
+            <DashboardNationsPage />
           </DashboardLayout>
         )
       }
