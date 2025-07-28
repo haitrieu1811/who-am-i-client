@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import { EllipsisVertical, PlusCircle } from 'lucide-react'
 import React from 'react'
 import { toast } from 'sonner'
@@ -26,6 +26,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '~/components/ui/dropdown-menu'
+import useLeagues from '~/hooks/use-leagues'
 import type { LeagueItem } from '~/types/leagues.types'
 
 export default function DashboardLeaguesPage() {
@@ -33,15 +34,7 @@ export default function DashboardLeaguesPage() {
   const [currentLeague, setCurrentLeague] = React.useState<LeagueItem | null>(null)
   const [currentDeletingId, setCurrentDeletingId] = React.useState<string | null>(null)
 
-  const getLeaguesQuery = useQuery({
-    queryKey: ['get-leagues'],
-    queryFn: () => leaguesApis.findMany()
-  })
-
-  const leagues = React.useMemo(
-    () => getLeaguesQuery.data?.data.data.leagues ?? [],
-    [getLeaguesQuery.data?.data.data.leagues]
-  )
+  const { getLeaguesQuery, leagues } = useLeagues()
 
   const deleteLeagueMutation = useMutation({
     mutationKey: ['delete-league'],

@@ -29,7 +29,7 @@ const items = [
   },
   {
     title: 'Câu lạc bộ',
-    url: '#',
+    url: PATH.DASHBOARD_TEAMS,
     icon: Shirt
   },
   {

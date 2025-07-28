@@ -9,6 +9,7 @@ import DashboardLayout from '~/layouts/dashboard'
 import DashboardPage from '~/pages/dashboard'
 import DashboardLeaguesPage from '~/pages/dashboard/leagues'
 import DashboardNationsPage from '~/pages/dashboard/nations'
+import DashboardTeamsPage from '~/pages/dashboard/teams'
 import HomePage from '~/pages/home'
 
 const ProtectedRoute = () => {
@@ -51,6 +52,14 @@ const router = createBrowserRouter([
         element: (
           <DashboardLayout>
             <DashboardLeaguesPage />
+          </DashboardLayout>
+        )
+      },
+      {
+        path: PATH.DASHBOARD_TEAMS,
+        element: (
+          <DashboardLayout>
+            <DashboardTeamsPage />
           </DashboardLayout>
         )
       }
