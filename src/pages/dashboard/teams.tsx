@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 
 import teamsApis from '~/apis/teams.apis'
 import CreateTeamForm from '~/components/forms/create-team'
+import PaginationV2 from '~/components/pagination'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,6 +30,7 @@ import {
 import { Input } from '~/components/ui/input'
 import useDebounce from '~/hooks/use-debounce'
 import useLeagues from '~/hooks/use-leagues'
+import useSearchQuery from '~/hooks/use-search-query'
 import { cn } from '~/lib/utils'
 import type { TeamItem } from '~/types/teams.types'
 
@@ -36,24 +38,30 @@ export default function DashboardTeamsPage() {
   const [isCreatingNew, setIsCreatingNew] = React.useState<boolean>(false)
   const [currentTeam, setCurrentTeam] = React.useState<TeamItem | null>(null)
   const [currentDeletingId, setCurrentDeletingId] = React.useState<string | null>(null)
-  const [searchQuery, setSearchQuery] = React.useState<string>('')
+  const [searchValue, searchSearchValue] = React.useState<string>('')
   const [currentFilterLeagueId, setCurrentFilterLeagueId] = React.useState<string | undefined>(undefined)
 
-  const debounceSearchQuery = useDebounce(searchQuery, 1000)
+  const debounceSearchValue = useDebounce(searchValue, 1000)
 
   const searchBoxRef = React.useRef<HTMLInputElement>(null)
 
+  const searchQuery = useSearchQuery()
+  const page = searchQuery.page
+
   const getTeamsQuery = useQuery({
-    queryKey: ['get-teams', { debounceSearchQuery, currentFilterLeagueId }],
+    queryKey: ['get-teams', { debounceSearchValue, currentFilterLeagueId, page }],
     queryFn: () =>
       teamsApis.findMany({
-        limit: '100',
-        name: debounceSearchQuery.trim() || undefined,
-        leagueId: currentFilterLeagueId
+        name: debounceSearchValue.trim() || undefined,
+        leagueId: currentFilterLeagueId,
+        page,
+        limit: '24'
       })
   })
 
   const teams = React.useMemo(() => getTeamsQuery.data?.data.data.teams ?? [], [getTeamsQuery.data?.data.data.teams])
+
+  const totalPages = getTeamsQuery.data?.data.data.pagination.totalPages ?? 0
 
   const totalTeams = getTeamsQuery.data?.data.data.pagination.totalRows ?? 0
 
@@ -71,8 +79,8 @@ export default function DashboardTeamsPage() {
     deleteTeamMutation.mutate(currentDeletingId)
   }
 
-  const handleClearSearchQuery = () => {
-    setSearchQuery('')
+  const handleClearSearchValue = () => {
+    searchSearchValue('')
     searchBoxRef.current?.focus()
   }
 
@@ -96,20 +104,20 @@ export default function DashboardTeamsPage() {
             </div>
             <Input
               ref={searchBoxRef}
-              value={searchQuery}
+              value={searchValue}
               placeholder='Tìm kiếm câu lạc bộ...'
               className='px-8'
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => searchSearchValue(e.target.value)}
             />
             {getTeamsQuery.isFetching && (
               <div className='w-8 absolute right-0 inset-y-0 flex justify-center items-center'>
                 <Loader2 className='size-4 stroke-1 animate-spin' />
               </div>
             )}
-            {!getTeamsQuery.isFetching && searchQuery.trim().length > 0 && (
+            {!getTeamsQuery.isFetching && searchValue.trim().length > 0 && (
               <button
                 className='w-8 absolute right-0 inset-y-0 flex justify-center items-center hover:cursor-pointer'
-                onClick={handleClearSearchQuery}
+                onClick={handleClearSearchValue}
               >
                 <X className='size-4 stroke-1' />
               </button>
@@ -185,6 +193,7 @@ export default function DashboardTeamsPage() {
             <Loader2 className='size-10 stroke-1 animate-spin' />
           </div>
         )}
+        {totalPages > 1 && <PaginationV2 totalPages={totalPages} />}
       </div>
       {/* Thêm câu lạc bộ mới */}
       <Dialog open={isCreatingNew} onOpenChange={setIsCreatingNew}>
