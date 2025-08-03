@@ -1,11 +1,12 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
-import { EllipsisVertical, Loader2, PlusCircle, Search, Trophy, X } from 'lucide-react'
+import { useMutation } from '@tanstack/react-query'
+import { EllipsisVertical, Loader2, PlusCircle, Trophy } from 'lucide-react'
 import React from 'react'
 import { toast } from 'sonner'
 
 import teamsApis from '~/apis/teams.apis'
 import CreateTeamForm from '~/components/forms/create-team'
 import PaginationV2 from '~/components/pagination'
+import SearchBox from '~/components/search-box'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,10 +28,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '~/components/ui/dropdown-menu'
-import { Input } from '~/components/ui/input'
 import useDebounce from '~/hooks/use-debounce'
 import useLeagues from '~/hooks/use-leagues'
 import useSearchQuery from '~/hooks/use-search-query'
+import useTeams from '~/hooks/use-teams'
 import { cn } from '~/lib/utils'
 import type { TeamItem } from '~/types/teams.types'
 
@@ -43,27 +44,14 @@ export default function DashboardTeamsPage() {
 
   const debounceSearchValue = useDebounce(searchValue, 1000)
 
-  const searchBoxRef = React.useRef<HTMLInputElement>(null)
-
   const searchQuery = useSearchQuery()
   const page = searchQuery.page
 
-  const getTeamsQuery = useQuery({
-    queryKey: ['get-teams', { debounceSearchValue, currentFilterLeagueId, page }],
-    queryFn: () =>
-      teamsApis.findMany({
-        name: debounceSearchValue.trim() || undefined,
-        leagueId: currentFilterLeagueId,
-        page,
-        limit: '24'
-      })
+  const { getTeamsQuery, teams, totalTeams, totalPages } = useTeams({
+    page,
+    name: debounceSearchValue,
+    leagueId: currentFilterLeagueId
   })
-
-  const teams = React.useMemo(() => getTeamsQuery.data?.data.data.teams ?? [], [getTeamsQuery.data?.data.data.teams])
-
-  const totalPages = getTeamsQuery.data?.data.data.pagination.totalPages ?? 0
-
-  const totalTeams = getTeamsQuery.data?.data.data.pagination.totalRows ?? 0
 
   const deleteTeamMutation = useMutation({
     mutationKey: ['delete-team'],
@@ -77,11 +65,6 @@ export default function DashboardTeamsPage() {
   const handleDeleteTeam = () => {
     if (!currentDeletingId) return
     deleteTeamMutation.mutate(currentDeletingId)
-  }
-
-  const handleClearSearchValue = () => {
-    searchSearchValue('')
-    searchBoxRef.current?.focus()
   }
 
   const { leagues } = useLeagues()
@@ -98,30 +81,8 @@ export default function DashboardTeamsPage() {
         </div>
         <div className='space-y-2'>
           {/* Tìm kiếm */}
-          <div className='relative w-[300px]'>
-            <div className='w-8 absolute left-0 inset-y-0 flex justify-center items-center'>
-              <Search className='size-4 stroke-1' />
-            </div>
-            <Input
-              ref={searchBoxRef}
-              value={searchValue}
-              placeholder='Tìm kiếm câu lạc bộ...'
-              className='px-8'
-              onChange={(e) => searchSearchValue(e.target.value)}
-            />
-            {getTeamsQuery.isFetching && (
-              <div className='w-8 absolute right-0 inset-y-0 flex justify-center items-center'>
-                <Loader2 className='size-4 stroke-1 animate-spin' />
-              </div>
-            )}
-            {!getTeamsQuery.isFetching && searchValue.trim().length > 0 && (
-              <button
-                className='w-8 absolute right-0 inset-y-0 flex justify-center items-center hover:cursor-pointer'
-                onClick={handleClearSearchValue}
-              >
-                <X className='size-4 stroke-1' />
-              </button>
-            )}
+          <div className='w-[300px]'>
+            <SearchBox value={searchValue} isFetching={getTeamsQuery.isFetching} setValue={searchSearchValue} />
           </div>
           {/* Lọc theo giải đấu */}
           <div className='flex items-center space-x-2'>

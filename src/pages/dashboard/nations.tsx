@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import { EllipsisVertical, PlusCircle } from 'lucide-react'
 import React from 'react'
 import { toast } from 'sonner'
@@ -26,6 +26,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '~/components/ui/dropdown-menu'
+import useNations from '~/hooks/use-nations'
 import type { NationItem } from '~/types/nations.types'
 
 export default function DashboardNationsPage() {
@@ -33,15 +34,7 @@ export default function DashboardNationsPage() {
   const [currentNation, setCurrentNation] = React.useState<NationItem | null>(null)
   const [currentDeletingId, setCurrentDeletingId] = React.useState<string | null>(null)
 
-  const getNationsQuery = useQuery({
-    queryKey: ['get-nations'],
-    queryFn: () => nationsApis.findMany({ limit: '100' })
-  })
-
-  const nations = React.useMemo(
-    () => getNationsQuery.data?.data.data.nations ?? [],
-    [getNationsQuery.data?.data.data.nations]
-  )
+  const { getNationsQuery, nations } = useNations({})
 
   const deleteNationMutation = useMutation({
     mutationKey: ['delete-nation'],

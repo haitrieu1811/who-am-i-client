@@ -34,7 +34,7 @@ const items = [
   },
   {
     title: 'Cầu thủ',
-    url: '#',
+    url: PATH.DASHBOARD_PLAYERS,
     icon: User
   },
   {

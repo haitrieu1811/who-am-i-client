@@ -8,7 +8,14 @@ import { Toaster } from '~/components/ui/sonner'
 import AppProvider from '~/contexts/app.context'
 import './index.css'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: false
+    }
+  }
+})
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

@@ -9,6 +9,7 @@ import DashboardLayout from '~/layouts/dashboard'
 import DashboardPage from '~/pages/dashboard'
 import DashboardLeaguesPage from '~/pages/dashboard/leagues'
 import DashboardNationsPage from '~/pages/dashboard/nations'
+import DashboardPlayersPage from '~/pages/dashboard/players'
 import DashboardTeamsPage from '~/pages/dashboard/teams'
 import HomePage from '~/pages/home'
 
@@ -60,6 +61,14 @@ const router = createBrowserRouter([
         element: (
           <DashboardLayout>
             <DashboardTeamsPage />
+          </DashboardLayout>
+        )
+      },
+      {
+        path: PATH.DASHBOARD_PLAYERS,
+        element: (
+          <DashboardLayout>
+            <DashboardPlayersPage />
           </DashboardLayout>
         )
       }
