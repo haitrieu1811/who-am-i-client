@@ -10,6 +10,7 @@ import DashboardPage from '~/pages/dashboard'
 import DashboardLeaguesPage from '~/pages/dashboard/leagues'
 import DashboardNationsPage from '~/pages/dashboard/nations'
 import DashboardPlayersPage from '~/pages/dashboard/players'
+import DashboardQuestionsPage from '~/pages/dashboard/questions'
 import DashboardTeamsPage from '~/pages/dashboard/teams'
 import HomePage from '~/pages/home'
 
@@ -69,6 +70,14 @@ const router = createBrowserRouter([
         element: (
           <DashboardLayout>
             <DashboardPlayersPage />
+          </DashboardLayout>
+        )
+      },
+      {
+        path: PATH.DASHBOARD_QUESTIONS,
+        element: (
+          <DashboardLayout>
+            <DashboardQuestionsPage />
           </DashboardLayout>
         )
       }

@@ -10,6 +10,7 @@ export type PlayerItem = {
   }
   shirtNumber: number
   position: PlayerPosition
+  age: number
   nation: {
     _id: string
     flag: string
@@ -32,7 +33,6 @@ export type PlayerItem = {
     createdAt: string
     updatedAt: string
   }
-  age: number
   dateOfBirth: string
   createdAt: string
   updatedAt: string

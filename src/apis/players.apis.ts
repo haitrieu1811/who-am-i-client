@@ -19,7 +19,7 @@ export type GetPlayersReqQuery = PaginationReqQuery & {
 }
 
 const playersApis = {
-  findMany(params: GetPlayersReqQuery) {
+  findMany(params?: GetPlayersReqQuery) {
     return http.get<GetPlayersResponse>('/players', { params })
   },
 

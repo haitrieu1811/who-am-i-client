@@ -39,7 +39,7 @@ const items = [
   },
   {
     title: 'Câu hỏi',
-    url: '#',
+    url: PATH.DASHBOARD_QUESTIONS,
     icon: FileQuestionMark
   }
 ]

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { Loader2, Search, X } from 'lucide-react'
 import React from 'react'
 
@@ -5,17 +6,25 @@ import { Input } from '~/components/ui/input'
 
 type SearchBoxProps = {
   isFetching?: boolean
-  value: string
   placeholder?: string
-  setValue: (value: React.SetStateAction<string>) => void
+  onChange?: (value: string) => void
 }
 
-export default function SearchBox({ isFetching, value, placeholder, setValue }: SearchBoxProps) {
+export default function SearchBox({ isFetching, placeholder, onChange }: SearchBoxProps) {
+  const [searchKeyword, setSearchKeyword] = React.useState<string>('')
+
   const searchBoxRef = React.useRef<HTMLInputElement>(null)
 
-  const handleClearSearchValue = () => {
-    setValue('')
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target
+    setSearchKeyword(value)
+    onChange && onChange(value)
+  }
+
+  const handleClear = () => {
+    setSearchKeyword('')
     searchBoxRef.current?.focus()
+    onChange && onChange('')
   }
 
   return (
@@ -25,20 +34,20 @@ export default function SearchBox({ isFetching, value, placeholder, setValue }: 
       </div>
       <Input
         ref={searchBoxRef}
-        value={value}
+        value={searchKeyword}
         placeholder={placeholder}
         className='px-8'
-        onChange={(e) => setValue(e.target.value)}
+        onChange={handleChange}
       />
       {isFetching && (
         <div className='w-8 absolute right-0 inset-y-0 flex justify-center items-center'>
           <Loader2 className='size-4 stroke-1 animate-spin' />
         </div>
       )}
-      {!isFetching && value.trim().length > 0 && (
+      {!isFetching && searchKeyword.trim().length > 0 && (
         <button
           className='w-8 absolute right-0 inset-y-0 flex justify-center items-center hover:cursor-pointer'
-          onClick={handleClearSearchValue}
+          onClick={handleClear}
         >
           <X className='size-4 stroke-1' />
         </button>

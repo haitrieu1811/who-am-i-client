@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { EllipsisVertical } from 'lucide-react'
 
 import { Avatar, AvatarImage } from '~/components/ui/avatar'
@@ -16,29 +17,52 @@ import type { PlayerItem as PlayerItemType } from '~/types/players.types'
 
 type PlayerItemProps = {
   playerData: PlayerItemType
+  isSelectMode?: boolean
+  isActive?: boolean
   onDetail?: () => void
   onDelete?: () => void
+  onClick?: (playerData: PlayerItemType) => void
 }
 
-export default function PlayerItem({ playerData, onDetail, onDelete }: PlayerItemProps) {
+export default function PlayerItem({
+  playerData,
+  isSelectMode = false,
+  isActive = false,
+  onDetail,
+  onDelete,
+  onClick
+}: PlayerItemProps) {
+  const handleClick = () => {
+    if (!isSelectMode) return
+    onClick && onClick(playerData)
+  }
+
   return (
-    <div className='relative border rounded-md bg-muted group overflow-hidden'>
+    <div
+      className={cn('relative border rounded-md bg-muted group overflow-hidden duration-100', {
+        'hover:cursor-pointer': isSelectMode,
+        'border-primary pointer-events-none': isActive
+      })}
+      onClick={handleClick}
+    >
       <div className='p-4 space-y-4 flex flex-col justify-center items-center'>
-        <div className='absolute top-1 right-1 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto'>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button size='icon' variant='ghost'>
-                <EllipsisVertical className='size-4' />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align='end'>
-              <DropdownMenuLabel>Tác vụ</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {onDetail && <DropdownMenuItem onClick={onDetail}>Chi tiết</DropdownMenuItem>}
-              {onDelete && <DropdownMenuItem onClick={onDelete}>Xóa</DropdownMenuItem>}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        {(onDetail || onDelete) && (
+          <div className='absolute top-1 right-1 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto'>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size='icon' variant='ghost'>
+                  <EllipsisVertical className='size-4' />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align='end'>
+                <DropdownMenuLabel>Tác vụ</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {onDetail && <DropdownMenuItem onClick={onDetail}>Chi tiết</DropdownMenuItem>}
+                {onDelete && <DropdownMenuItem onClick={onDelete}>Xóa</DropdownMenuItem>}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        )}
         <div className='relative p-1 border rounded-full'>
           <Avatar className='size-16'>
             <AvatarImage src={playerData.avatar.url} alt={playerData.name} />

@@ -117,8 +117,6 @@ export default function CreatePlayerForm({ playerData, onCreateSuccess, onUpdate
     })
   })
 
-  console.log(form.watch())
-
   return (
     <Form {...form}>
       <form className='space-y-6 relative' onSubmit={handleSubmit}>

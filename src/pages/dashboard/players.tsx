@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import { Loader2, PlusCircle } from 'lucide-react'
 import React from 'react'
 import { toast } from 'sonner'
@@ -21,6 +21,7 @@ import {
 import { Button } from '~/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '~/components/ui/dialog'
 import useDebounce from '~/hooks/use-debounce'
+import usePlayers from '~/hooks/use-players'
 import useSearchQuery from '~/hooks/use-search-query'
 import type { PlayerItem as PlayerItemType } from '~/types/players.types'
 
@@ -28,31 +29,18 @@ export default function DashboardPlayersPage() {
   const [isCreatingNew, setIsCreatingNew] = React.useState<boolean>(false)
   const [currentPlayer, setCurrentPlayer] = React.useState<PlayerItemType | null>(null)
   const [currentDeletingId, setCurrentDeletingId] = React.useState<string | null>(null)
-  const [searchValue, setSearchValue] = React.useState<string>('')
+  const [searchKeyword, setSearchKeyword] = React.useState<string>('')
 
-  const debounceSearchValue = useDebounce(searchValue, 1000)
+  const debounceSearchKeyword = useDebounce(searchKeyword, 1000)
 
   const searchQuery = useSearchQuery()
   const page = searchQuery.page
 
-  const getPlayersQuery = useQuery({
-    queryKey: ['get-players', { page, debounceSearchValue }],
-    queryFn: () =>
-      playersApis.findMany({
-        page,
-        limit: '24',
-        name: debounceSearchValue.trim() ? debounceSearchValue : undefined
-      })
+  const { getPlayersQuery, players, totalPages, totalPlayers } = usePlayers({
+    page,
+    limit: '24',
+    name: debounceSearchKeyword.trim() ? debounceSearchKeyword : undefined
   })
-
-  const players = React.useMemo(
-    () => getPlayersQuery.data?.data.data.players ?? [],
-    [getPlayersQuery.data?.data.data.players]
-  )
-
-  const totalPlayers = getPlayersQuery.data?.data.data.pagination.totalRows ?? 0
-
-  const totalPages = getPlayersQuery.data?.data.data.pagination.totalPages ?? 0
 
   const deletePlayerMutation = useMutation({
     mutationKey: ['delete-player'],
@@ -80,7 +68,7 @@ export default function DashboardPlayersPage() {
         </div>
         {/* Tìm kiếm */}
         <div className='w-[300px]'>
-          <SearchBox value={searchValue} placeholder='Tìm kiếm cầu thủ...' setValue={setSearchValue} />
+          <SearchBox placeholder='Tìm kiếm cầu thủ...' onChange={(value) => setSearchKeyword(value)} />
         </div>
         {/* Danh sách cầu thủ */}
         {totalPlayers > 0 && !getPlayersQuery.isFetching && (
