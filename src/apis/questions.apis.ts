@@ -4,8 +4,8 @@ import type { CreateQuestionResponse, GetQuestionResponse, GetQuestionsResponse 
 import type { OnlyMessageResponse, PaginationReqQuery } from '~/types/utils.types'
 
 const questionsApis = {
-  findOneByLevel(level: QuestionLevel) {
-    return http.get<GetQuestionResponse>(`/questions/level/${level}`)
+  findRandom() {
+    return http.get<GetQuestionResponse>('/questions/random')
   },
 
   findOneById(questionId: string) {

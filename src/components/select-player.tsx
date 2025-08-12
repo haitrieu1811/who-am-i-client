@@ -10,10 +10,11 @@ import type { PlayerItem as PlayerItemType } from '~/types/players.types'
 
 type SelectPlayerProps = {
   defaultValue?: PlayerItemType | null
+  isPlayMode?: boolean
   onChange?: (playerData: PlayerItemType) => void
 }
 
-export default React.memo(function SelectPlayer({ defaultValue, onChange }: SelectPlayerProps) {
+export default React.memo(function SelectPlayer({ defaultValue, isPlayMode = false, onChange }: SelectPlayerProps) {
   const [searchKeyword, setSearchKeyword] = React.useState<string>('')
   const [currentPlayer, setCurrentPlayer] = React.useState<PlayerItemType | null>(null)
 
@@ -40,6 +41,7 @@ export default React.memo(function SelectPlayer({ defaultValue, onChange }: Sele
               <PlayerItem
                 playerData={player}
                 isSelectMode
+                isPlayMode={isPlayMode}
                 isActive={player._id === currentPlayer?._id || player._id === defaultValue?._id}
                 onClick={(playerData) => setCurrentPlayer(playerData)}
               />

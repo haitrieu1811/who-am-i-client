@@ -60,6 +60,7 @@ export default function DashboardLeaguesPage() {
             Thêm giải đấu mới
           </Button>
         </div>
+        {/* Danh sách giải đấu */}
         <div className='grid grid-cols-12 gap-4'>
           {leagues.map((league) => (
             <div key={league._id} className='col-span-2'>
@@ -80,7 +81,7 @@ export default function DashboardLeaguesPage() {
                   </DropdownMenu>
                 </div>
                 <Avatar className='size-16'>
-                  <AvatarImage src={league.logo.url} alt={league.name} />
+                  <AvatarImage src={league.logo.url} alt={league.name} className='bg-white' />
                 </Avatar>
                 <div className='text-center text-sm font-medium'>{league.name}</div>
                 <div className='text-xs text-muted-foreground'>100 cầu thủ</div>

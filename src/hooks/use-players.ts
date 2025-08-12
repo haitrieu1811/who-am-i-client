@@ -23,10 +23,16 @@ export default function usePlayers({ enabled, ...query }: UsePlayersProps & GetP
 
   const totalPages = getPlayersQuery.data?.data.data.pagination.totalPages ?? 0
 
+  const pagination = React.useMemo(
+    () => getPlayersQuery.data?.data.data.pagination,
+    [getPlayersQuery.data?.data.data.pagination]
+  )
+
   return {
     getPlayersQuery,
     players,
     totalPlayers,
-    totalPages
+    totalPages,
+    pagination
   }
 }

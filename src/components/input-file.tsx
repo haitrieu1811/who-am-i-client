@@ -32,7 +32,7 @@ export default function InputFile({ children, onChange, multiple = false, maxFil
         hidden
         ref={inputFileRef}
         type='file'
-        accept='.jpg,.jpeg,.png,.webp'
+        // accept='.jpg,.jpeg,.png,.webp'
         onChange={handleFileChange}
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         onClick={(e) => ((e.target as any).value = null)}

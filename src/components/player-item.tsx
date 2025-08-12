@@ -88,10 +88,10 @@ export default function PlayerItem({
             'text-red-500': playerData.position === PlayerPosition.Fw
           })}
         >
-          {playerData.position === PlayerPosition.Gk && 'G'}
-          {playerData.position === PlayerPosition.Df && 'D'}
-          {playerData.position === PlayerPosition.Mf && 'M'}
-          {playerData.position === PlayerPosition.Fw && 'F'}
+          {playerData.position === PlayerPosition.Gk && 'GK'}
+          {playerData.position === PlayerPosition.Df && 'DF'}
+          {playerData.position === PlayerPosition.Mf && 'MF'}
+          {playerData.position === PlayerPosition.Fw && 'FW'}
         </div>
         <div className='flex items-center space-x-1'>
           <Avatar className='size-4'>
