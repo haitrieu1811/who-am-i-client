@@ -20,11 +20,17 @@ export default function useNations({ enabled = true, ...query }: UseNationsProps
     [getNationsQuery.data?.data.data.nations]
   )
 
-  const totalNations = getNationsQuery.data?.data.data.pagination.totalRows
+  const totalNations = getNationsQuery.data?.data.data.pagination.totalRows ?? 0
+
+  const pagination = React.useMemo(
+    () => getNationsQuery.data?.data.data.pagination,
+    [getNationsQuery.data?.data.data.pagination]
+  )
 
   return {
     getNationsQuery,
     nations,
-    totalNations
+    totalNations,
+    pagination
   }
 }
