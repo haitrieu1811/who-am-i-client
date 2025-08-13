@@ -9,9 +9,9 @@ type AnswerInfoProps = {
 
 export default function AnswerInfo({ isTrue, children, hintMessage }: AnswerInfoProps) {
   return (
-    <div className='space-y-1'>
+    <div className='space-y-1 w-15'>
       <div
-        className={cn('size-15 rounded-md p-3 border-2 flex justify-center items-center', {
+        className={cn('w-full aspect-square rounded-md p-3 border-2 flex justify-center items-center', {
           'border-border': !isTrue,
           'border-green-500 bg-green-500/10': isTrue
         })}

@@ -56,7 +56,7 @@ export default function Game() {
 
   return (
     <React.Fragment>
-      <div className='w-lg mx-auto p-4 bg-muted min-h-screen max-h-screen overflow-y-auto'>
+      <div className='w-lg mx-auto p-6 bg-muted min-h-screen'>
         <div className='space-y-6'>
           {/* Hình ảnh gợi ý */}
           <div className='flex justify-center bg-background blur-md py-10 rounded-md'>
@@ -187,6 +187,22 @@ export default function Game() {
               ))}
             </div>
           )}
+          {/* Giới thiệu */}
+          <div className='text-center text-sm text-muted-foreground space-y-1'>
+            <p>
+              Được lấy ý tưởng từ trang{' '}
+              <a href='https://playfootball.games/en-us/who-are-ya/' target='_blank' className='text-blue-500'>
+                playfootball.games
+              </a>{' '}
+            </p>
+            <p>
+              Dữ liệu được sử dụng từ trang{' '}
+              <a href='https://www.sofascore.com' target='_blank' className='text-blue-500'>
+                Sofascore.com
+              </a>{' '}
+            </p>
+            <p>Dữ liệu của mùa giải 2025-2026</p>
+          </div>
         </div>
       </div>
       {/* Kết quả của câu hỏi */}

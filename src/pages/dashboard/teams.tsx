@@ -29,6 +29,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '~/components/ui/dropdown-menu'
+import { Label } from '~/components/ui/label'
 import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
 import useDebounce from '~/hooks/use-debounce'
 import useLeagues from '~/hooks/use-leagues'
@@ -95,6 +96,7 @@ export default function DashboardTeamsPage() {
           </div>
           {/* Lọc theo giải đấu */}
           <div className='flex flex-wrap items-center space-x-2'>
+            <Label>Giải đấu</Label>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
