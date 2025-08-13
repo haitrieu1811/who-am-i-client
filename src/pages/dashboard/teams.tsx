@@ -1,6 +1,7 @@
 import { useMutation } from '@tanstack/react-query'
 import { EllipsisVertical, Loader2, PlusCircle, Trophy } from 'lucide-react'
 import React from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
 
 import teamsApis from '~/apis/teams.apis'
@@ -28,14 +29,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '~/components/ui/dropdown-menu'
+import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip'
 import useDebounce from '~/hooks/use-debounce'
 import useLeagues from '~/hooks/use-leagues'
 import useSearchQuery from '~/hooks/use-search-query'
 import useTeams from '~/hooks/use-teams'
-import { cn } from '~/lib/utils'
 import type { TeamItem } from '~/types/teams.types'
 
 export default function DashboardTeamsPage() {
+  const [searchParams, setSearchParams] = useSearchParams()
+
   const [isCreatingNew, setIsCreatingNew] = React.useState<boolean>(false)
   const [currentTeam, setCurrentTeam] = React.useState<TeamItem | null>(null)
   const [currentDeletingId, setCurrentDeletingId] = React.useState<string | null>(null)
@@ -67,6 +70,12 @@ export default function DashboardTeamsPage() {
     deleteTeamMutation.mutate(currentDeletingId)
   }
 
+  const handleFilterByLeague = (leagueId?: string) => {
+    setCurrentFilterLeagueId(leagueId)
+    searchParams.delete('page')
+    setSearchParams(searchParams)
+  }
+
   const { leagues } = useLeagues()
 
   return (
@@ -79,41 +88,43 @@ export default function DashboardTeamsPage() {
             Thêm câu lạc bộ mới
           </Button>
         </div>
-        <div className='space-y-2'>
+        <div className='space-y-4'>
           {/* Tìm kiếm */}
           <div className='w-[300px]'>
-            <SearchBox value={searchValue} isFetching={getTeamsQuery.isFetching} setValue={searchSearchValue} />
+            <SearchBox placeholder='Tìm kiếm câu lạc bộ...' onChange={(value) => searchSearchValue(value)} />
           </div>
           {/* Lọc theo giải đấu */}
-          <div className='flex items-center space-x-2'>
-            <button
-              className={cn('flex items-center space-x-1 border p-2 rounded-md bg-card hover:cursor-pointer', {
-                'text-muted-foreground': currentFilterLeagueId !== undefined,
-                'border-blue-500': currentFilterLeagueId === undefined,
-                'text-blue-500': currentFilterLeagueId === undefined
-              })}
-              onClick={() => setCurrentFilterLeagueId(undefined)}
-            >
-              <Trophy className='size-4' />
-              <span className='text-sm'>Tất cả giải đấu</span>
-            </button>
+          <div className='flex flex-wrap items-center space-x-2'>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size='icon'
+                  variant={currentFilterLeagueId === undefined ? 'default' : 'outline'}
+                  onClick={() => handleFilterByLeague(undefined)}
+                >
+                  <Trophy className='size-4 stroke-1' />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Tất cả giải đấu</TooltipContent>
+            </Tooltip>
             {leagues.map((league) => (
-              <button
-                key={league._id}
-                className={cn('flex items-center space-x-1 border p-2 rounded-md bg-card hover:cursor-pointer', {
-                  'text-muted-foreground': currentFilterLeagueId !== league._id,
-                  'border-blue-500': currentFilterLeagueId === league._id,
-                  'text-blue-500': currentFilterLeagueId === league._id
-                })}
-                onClick={() => setCurrentFilterLeagueId(league._id)}
-              >
-                <img src={league.logo.url} alt={league.name} className='size-6 mix-blend-lighten' />
-                <span className='text-sm'>{league.name}</span>
-              </button>
+              <Tooltip key={league._id}>
+                <TooltipTrigger asChild>
+                  <Button
+                    size='icon'
+                    variant={currentFilterLeagueId === league._id ? 'default' : 'outline'}
+                    onClick={() => handleFilterByLeague(league._id)}
+                  >
+                    <img src={league.logo.url} alt={league.name} className='size-6' />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>{league.name}</TooltipContent>
+              </Tooltip>
             ))}
           </div>
         </div>
-        {totalTeams > 0 && !getTeamsQuery.isLoading && (
+        {/* Danh sách CLB */}
+        {totalTeams > 0 && !getTeamsQuery.isFetching && (
           <div className='grid grid-cols-12 gap-4'>
             {teams.map((team) => (
               <div key={team._id} className='col-span-2'>
@@ -134,7 +145,7 @@ export default function DashboardTeamsPage() {
                     </DropdownMenu>
                   </div>
                   <Avatar className='size-16 rounded-none'>
-                    <AvatarImage src={team.logo.url} alt={team.name} className='mix-blend-lighten' />
+                    <AvatarImage src={team.logo.url} alt={team.name} />
                   </Avatar>
                   <div className='text-center text-sm font-medium'>{team.name}</div>
                   <div className='text-xs text-muted-foreground'>100 cầu thủ</div>
@@ -149,12 +160,18 @@ export default function DashboardTeamsPage() {
             ))}
           </div>
         )}
-        {getTeamsQuery.isLoading && (
+        {/* Loading */}
+        {getTeamsQuery.isFetching && (
           <div className='flex justify-center p-10'>
             <Loader2 className='size-10 stroke-1 animate-spin' />
           </div>
         )}
-        {totalPages > 1 && <PaginationV2 totalPages={totalPages} />}
+        {/* Không có CLB nào */}
+        {totalTeams === 0 && !getTeamsQuery.isFetching && (
+          <div className='font-medium text-center'>Không tìm thấy câu lạc bộ nào.</div>
+        )}
+        {/* Phân trang */}
+        {totalPages > 1 && !getTeamsQuery.isFetching && <PaginationV2 totalPages={totalPages} />}
       </div>
       {/* Thêm câu lạc bộ mới */}
       <Dialog open={isCreatingNew} onOpenChange={setIsCreatingNew}>

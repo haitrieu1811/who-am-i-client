@@ -80,8 +80,8 @@ export default function DashboardLeaguesPage() {
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
-                <Avatar className='size-16'>
-                  <AvatarImage src={league.logo.url} alt={league.name} className='bg-white' />
+                <Avatar className='size-16 rounded-none'>
+                  <AvatarImage src={league.logo.url} alt={league.name} />
                 </Avatar>
                 <div className='text-center text-sm font-medium'>{league.name}</div>
                 <div className='text-xs text-muted-foreground'>100 cầu thủ</div>

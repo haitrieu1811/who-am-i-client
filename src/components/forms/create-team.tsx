@@ -124,7 +124,7 @@ export default function CreateTeamForm({ teamData, onCreateSuccess, onUpdateSucc
           <Label>Logo</Label>
           {!logoPreview && !isUpdateMode && <Skeleton className='size-16 rounded-full' />}
           {(logoPreview || isUpdateMode) && (
-            <img src={logoPreview || teamData?.logo.url} alt='' className='size-16 rounded-full object-cover' />
+            <img src={logoPreview || teamData?.logo.url} alt='' className='size-16 object-cover' />
           )}
           {!logoFile && form.formState.isSubmitted && !isUpdateMode && (
             <p className='text-sm text-destructive'>Logo là bắt buộc</p>

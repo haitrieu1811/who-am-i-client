@@ -13,7 +13,7 @@ export default function AnswerInfo({ isTrue, children, hintMessage }: AnswerInfo
       <div
         className={cn('size-15 rounded-md p-3 border-2 flex justify-center items-center', {
           'border-border': !isTrue,
-          'border-green-500': isTrue
+          'border-green-500 bg-green-500/10': isTrue
         })}
       >
         {children}

@@ -106,7 +106,9 @@ export default function DashboardNationsPage() {
           </div>
         )}
         {/* Phân trang */}
-        {pagination && pagination.totalPages > 0 && <PaginationV2 totalPages={pagination.totalPages} />}
+        {pagination && pagination.totalPages > 0 && !getNationsQuery.isFetching && (
+          <PaginationV2 totalPages={pagination.totalPages} />
+        )}
       </div>
       {/* Thêm quốc gia mới */}
       <Dialog open={isCreatingNew} onOpenChange={setIsCreatingNew}>
