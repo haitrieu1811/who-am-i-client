@@ -170,7 +170,7 @@ export default function DashboardTeamsPage() {
         )}
         {/* Không có CLB nào */}
         {totalTeams === 0 && !getTeamsQuery.isFetching && (
-          <div className='font-medium text-center'>Không tìm thấy câu lạc bộ nào.</div>
+          <div className='font-medium'>Không tìm thấy câu lạc bộ nào.</div>
         )}
         {/* Phân trang */}
         {totalPages > 1 && !getTeamsQuery.isFetching && <PaginationV2 totalPages={totalPages} />}

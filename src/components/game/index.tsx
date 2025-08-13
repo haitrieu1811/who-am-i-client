@@ -56,7 +56,7 @@ export default function Game() {
 
   return (
     <React.Fragment>
-      <div className='w-lg mx-auto p-6 bg-muted min-h-screen'>
+      <div className='sm:w-full md:w-lg mx-auto p-6 bg-muted min-h-screen'>
         <div className='space-y-6'>
           {/* Hình ảnh gợi ý */}
           <div className='flex justify-center bg-background blur-md py-10 rounded-md'>
@@ -108,87 +108,99 @@ export default function Game() {
                   <div className='flex flex-col justify-center items-center space-x-2'>
                     <div className='text-center capitalize font-medium'>{answer.name}</div>
                   </div>
-                  <div className='flex justify-center items-start space-x-6'>
-                    <AnswerInfo isTrue={answer.nation._id === correctAnswer?.nation._id}>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <img src={answer.nation.flag} />
-                        </TooltipTrigger>
-                        <TooltipContent>Quốc tịch: {answer.nation.name}</TooltipContent>
-                      </Tooltip>
-                    </AnswerInfo>
-                    <AnswerInfo isTrue={answer.league._id === correctAnswer?.league._id}>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <img src={answer.league.logo} />
-                        </TooltipTrigger>
-                        <TooltipContent>Giải đấu: {answer.league.name}</TooltipContent>
-                      </Tooltip>
-                    </AnswerInfo>
-                    <AnswerInfo isTrue={answer.team._id === correctAnswer?.team._id}>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <img src={answer.team.logo} />
-                        </TooltipTrigger>
-                        <TooltipContent>Câu lạc bộ: {answer.team.name}</TooltipContent>
-                      </Tooltip>
-                    </AnswerInfo>
-                    <AnswerInfo isTrue={answer.position === correctAnswer?.position}>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <div
-                            className={cn('flex justify-center items-center font-semibold', {
-                              'text-yellow-500': answer.position === PlayerPosition.Gk,
-                              'text-blue-500': answer.position === PlayerPosition.Df,
-                              'text-green-500': answer.position === PlayerPosition.Mf,
-                              'text-red-500': answer.position === PlayerPosition.Fw
-                            })}
-                          >
-                            {answer.position === PlayerPosition.Gk && 'GK'}
-                            {answer.position === PlayerPosition.Df && 'DF'}
-                            {answer.position === PlayerPosition.Mf && 'MF'}
-                            {answer.position === PlayerPosition.Fw && 'FW'}
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          Vị trí thi đấu: {answer.position === PlayerPosition.Gk && 'Thủ môn'}
-                          {answer.position === PlayerPosition.Df && 'Hậu vệ'}
-                          {answer.position === PlayerPosition.Mf && 'Tiền vệ'}
-                          {answer.position === PlayerPosition.Fw && 'Tiền đạo'}
-                        </TooltipContent>
-                      </Tooltip>
-                    </AnswerInfo>
-                    <AnswerInfo
-                      isTrue={answer.age === correctAnswer?.age}
-                      hintMessage={correctAnswer && answer.age < correctAnswer.age ? 'Lớn hơn' : 'Nhỏ hơn'}
-                    >
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <div className='flex justify-center items-center font-semibold'>{answer.age}</div>
-                        </TooltipTrigger>
-                        <TooltipContent>Số tuổi</TooltipContent>
-                      </Tooltip>
-                    </AnswerInfo>
-                    <AnswerInfo
-                      isTrue={answer.shirtNumber === correctAnswer?.shirtNumber}
-                      hintMessage={
-                        correctAnswer && answer.shirtNumber < correctAnswer.shirtNumber ? 'Lớn hơn' : 'Nhỏ hơn'
-                      }
-                    >
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <div className='flex justify-center items-center font-semibold'>#{answer.shirtNumber}</div>
-                        </TooltipTrigger>
-                        <TooltipContent>Số áo</TooltipContent>
-                      </Tooltip>
-                    </AnswerInfo>
+                  <div className='grid grid-cols-12 gap-6'>
+                    <div className='col-span-2'>
+                      <AnswerInfo isTrue={answer.nation._id === correctAnswer?.nation._id}>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <img src={answer.nation.flag} />
+                          </TooltipTrigger>
+                          <TooltipContent>Quốc tịch: {answer.nation.name}</TooltipContent>
+                        </Tooltip>
+                      </AnswerInfo>
+                    </div>
+                    <div className='col-span-2'>
+                      <AnswerInfo isTrue={answer.league._id === correctAnswer?.league._id}>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <img src={answer.league.logo} />
+                          </TooltipTrigger>
+                          <TooltipContent>Giải đấu: {answer.league.name}</TooltipContent>
+                        </Tooltip>
+                      </AnswerInfo>
+                    </div>
+                    <div className='col-span-2'>
+                      <AnswerInfo isTrue={answer.team._id === correctAnswer?.team._id}>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <img src={answer.team.logo} />
+                          </TooltipTrigger>
+                          <TooltipContent>Câu lạc bộ: {answer.team.name}</TooltipContent>
+                        </Tooltip>
+                      </AnswerInfo>
+                    </div>
+                    <div className='col-span-2'>
+                      <AnswerInfo isTrue={answer.position === correctAnswer?.position}>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <div
+                              className={cn('flex justify-center items-center font-semibold', {
+                                'text-yellow-500': answer.position === PlayerPosition.Gk,
+                                'text-blue-500': answer.position === PlayerPosition.Df,
+                                'text-green-500': answer.position === PlayerPosition.Mf,
+                                'text-red-500': answer.position === PlayerPosition.Fw
+                              })}
+                            >
+                              {answer.position === PlayerPosition.Gk && 'GK'}
+                              {answer.position === PlayerPosition.Df && 'DF'}
+                              {answer.position === PlayerPosition.Mf && 'MF'}
+                              {answer.position === PlayerPosition.Fw && 'FW'}
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            Vị trí thi đấu: {answer.position === PlayerPosition.Gk && 'Thủ môn'}
+                            {answer.position === PlayerPosition.Df && 'Hậu vệ'}
+                            {answer.position === PlayerPosition.Mf && 'Tiền vệ'}
+                            {answer.position === PlayerPosition.Fw && 'Tiền đạo'}
+                          </TooltipContent>
+                        </Tooltip>
+                      </AnswerInfo>
+                    </div>
+                    <div className='col-span-2'>
+                      <AnswerInfo
+                        isTrue={answer.age === correctAnswer?.age}
+                        hintMessage={correctAnswer && answer.age < correctAnswer.age ? 'Lớn hơn' : 'Nhỏ hơn'}
+                      >
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <div className='flex justify-center items-center font-semibold'>{answer.age}</div>
+                          </TooltipTrigger>
+                          <TooltipContent>Số tuổi</TooltipContent>
+                        </Tooltip>
+                      </AnswerInfo>
+                    </div>
+                    <div className='col-span-2'>
+                      <AnswerInfo
+                        isTrue={answer.shirtNumber === correctAnswer?.shirtNumber}
+                        hintMessage={
+                          correctAnswer && answer.shirtNumber < correctAnswer.shirtNumber ? 'Lớn hơn' : 'Nhỏ hơn'
+                        }
+                      >
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <div className='flex justify-center items-center font-semibold'>#{answer.shirtNumber}</div>
+                          </TooltipTrigger>
+                          <TooltipContent>Số áo</TooltipContent>
+                        </Tooltip>
+                      </AnswerInfo>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
           )}
           {/* Giới thiệu */}
-          <div className='text-center text-sm text-muted-foreground space-y-1'>
+          <div className='text-center text-xs text-muted-foreground space-y-1'>
             <p>
               Được lấy ý tưởng từ trang{' '}
               <a href='https://playfootball.games/en-us/who-are-ya/' target='_blank' className='text-blue-500'>
