@@ -99,7 +99,7 @@ export default function SelectAnswer({ onChange }: SelectAnswerProps) {
             {totalPages > 1 && (
               <div className='flex justify-between items-center space-x-2'>
                 <div className='font-medium text-sm'>
-                  Trang {pagination?.page}/{totalPages}
+                  Trang {pagination?.page} trên {totalPages}
                 </div>
                 <div className='flex items-center space-x-1'>
                   <Button

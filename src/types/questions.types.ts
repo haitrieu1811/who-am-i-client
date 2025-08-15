@@ -17,6 +17,7 @@ export type GetQuestionResponse = SuccessResponse<{
 export type GetQuestionsResponse = SuccessResponse<{
   questions: QuestionItem[]
   pagination: PaginationResponse
+  existedPlayerIds: string[]
 }>
 
 export type CreateQuestionResponse = GetQuestionResponse

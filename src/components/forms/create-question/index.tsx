@@ -9,10 +9,10 @@ import { toast } from 'sonner'
 import z from 'zod'
 
 import questionsApis from '~/apis/questions.apis'
-import SelectPlayer from '~/components/select-player'
+import SelectPlayer from '~/components/forms/create-question/select-player'
 import { Avatar, AvatarImage } from '~/components/ui/avatar'
 import { Button } from '~/components/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '~/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '~/components/ui/dialog'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form'
 import { Label } from '~/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '~/components/ui/radio-group'
@@ -169,6 +169,7 @@ export default function CreateQuestionForm({
         <DialogContent className='max-h-[90vh] overflow-y-auto'>
           <DialogHeader>
             <DialogTitle>Chọn cầu thủ</DialogTitle>
+            <DialogDescription>Chọn cầu thủ để tạo câu hỏi cho cầu thủ đó</DialogDescription>
           </DialogHeader>
           <div className='mt-4'>
             <SelectPlayer defaultValue={currentPlayer} onChange={handleChangePlayer} />

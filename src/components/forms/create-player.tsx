@@ -79,7 +79,7 @@ export default function CreatePlayerForm({ playerData, onCreateSuccess, onUpdate
     mutationFn: playersApis.insertOne,
     onSuccess: (data) => {
       toast.success(data.data.message)
-      form.reset()
+      // form.reset()
       setAvatarFile(null)
       onCreateSuccess && onCreateSuccess(data)
     }
@@ -313,22 +313,22 @@ export default function CreatePlayerForm({ playerData, onCreateSuccess, onUpdate
                       {
                         label: 'Thủ môn',
                         value: PlayerPosition.Gk.toString(),
-                        position: 'G'
+                        position: 'GK'
                       },
                       {
                         label: 'Hậu vệ',
                         value: PlayerPosition.Df.toString(),
-                        position: 'D'
+                        position: 'DF'
                       },
                       {
                         label: 'Tiền vệ',
                         value: PlayerPosition.Mf.toString(),
-                        position: 'M'
+                        position: 'MF'
                       },
                       {
                         label: 'Tiền đạo',
                         value: PlayerPosition.Fw.toString(),
-                        position: 'F'
+                        position: 'FW'
                       }
                     ].map((item) => (
                       <FormItem key={item.value} className='flex items-center gap-3'>

@@ -25,33 +25,36 @@ import { AppContext } from '~/contexts/app.context'
 import { cn } from '~/lib/utils'
 import type { PlayerItem as PlayerItemType } from '~/types/players.types'
 
-const MAX_ANSWER_TURN = 6
+const MAX_ANSWER_TURN = 8
 
 export default function Game() {
   const [answers, setAnswers] = React.useState<PlayerItemType[]>([])
   const [isSelecting, setIsSelecting] = React.useState<boolean>(false)
+  const [isShowResult, setIsShowResult] = React.useState<boolean>(true)
 
   const { handleResetSelectPlayer } = React.useContext(AppContext)
 
-  const getQuestionByLevelQuery = useQuery({
+  const getRandomQuestion = useQuery({
     queryKey: ['get-random-question'],
     queryFn: () => questionsApis.findRandom()
   })
 
   const question = React.useMemo(
-    () => getQuestionByLevelQuery.data?.data.data.question,
-    [getQuestionByLevelQuery.data?.data.data.question]
+    () => getRandomQuestion.data?.data.data.question,
+    [getRandomQuestion.data?.data.data.question]
   )
 
   const correctAnswer = React.useMemo(() => question?.player, [question?.player])
 
   const isWin = correctAnswer && answers.map((answer) => answer._id).includes(correctAnswer._id)
-  const isEnd = answers.length === MAX_ANSWER_TURN
+  const isLose = answers.length === MAX_ANSWER_TURN
+  const isEnd = isWin || isLose
 
   const handleContinue = () => {
     setAnswers([])
-    getQuestionByLevelQuery.refetch()
+    getRandomQuestion.refetch()
     handleResetSelectPlayer()
+    setIsShowResult(true)
   }
 
   return (
@@ -59,7 +62,11 @@ export default function Game() {
       <div className='sm:w-full md:w-lg mx-auto p-6 bg-muted min-h-screen'>
         <div className='space-y-6'>
           {/* Hình ảnh gợi ý */}
-          <div className='flex justify-center bg-background blur-md py-10 rounded-md'>
+          <div
+            className={cn('flex justify-center bg-background py-10 rounded-md', {
+              'blur-md': !isEnd
+            })}
+          >
             <Avatar className='size-40'>
               <AvatarImage src={question?.player.avatar.url} />
             </Avatar>
@@ -95,7 +102,7 @@ export default function Game() {
             </div>
           </div>
           <div className='flex justify-end'>
-            <Button onClick={() => setIsSelecting(true)}>
+            <Button disabled={isEnd} onClick={() => setIsSelecting(true)}>
               <Reply className='size-4' />
               Đưa ra đáp án
             </Button>
@@ -106,7 +113,13 @@ export default function Game() {
               {answers.map((answer, index) => (
                 <div key={index} className='space-y-3'>
                   <div className='flex flex-col justify-center items-center space-x-2'>
-                    <div className='text-center capitalize font-medium'>{answer.name}</div>
+                    <div
+                      className={cn('text-center capitalize font-medium', {
+                        'text-green-500': answer.name === correctAnswer?.name
+                      })}
+                    >
+                      {answer.name}
+                    </div>
                   </div>
                   <div className='grid grid-cols-12 gap-6'>
                     <div className='col-span-2'>
@@ -218,23 +231,18 @@ export default function Game() {
         </div>
       </div>
       {/* Kết quả của câu hỏi */}
-      <Dialog
-        open={isWin || isEnd}
-        onOpenChange={(value) => {
-          if (!value) handleContinue()
-        }}
-      >
+      <Dialog open={isEnd && isShowResult} onOpenChange={setIsShowResult}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Kết quả của câu hỏi</DialogTitle>
             <DialogDescription
               className={cn({
                 'text-green-500': isWin,
-                'text-red-500': isEnd && !isWin
+                'text-red-500': isLose && !isWin
               })}
             >
               {isWin && 'Bạn đã đoán đúng!'}
-              {isEnd && !isWin && 'Bạn đã đoán không chính xác!'}
+              {isLose && !isWin && 'Bạn đã đoán không chính xác!'}
             </DialogDescription>
           </DialogHeader>
           {correctAnswer && <PlayerItem playerData={correctAnswer} />}

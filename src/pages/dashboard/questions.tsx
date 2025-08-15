@@ -1,10 +1,12 @@
+/* eslint-disable react-refresh/only-export-components */
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { EllipsisVertical, PlusCircle } from 'lucide-react'
+import { EllipsisVertical, Loader2, PlusCircle } from 'lucide-react'
 import React from 'react'
 import { toast } from 'sonner'
 
 import questionsApis from '~/apis/questions.apis'
 import CreateQuestionForm from '~/components/forms/create-question'
+import PaginationV2 from '~/components/pagination'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,8 +31,19 @@ import {
 } from '~/components/ui/dropdown-menu'
 import { QuestionLevel } from '~/constants/enum'
 import { AppContext } from '~/contexts/app.context'
+import useSearchQuery from '~/hooks/use-search-query'
 import { cn } from '~/lib/utils'
 import type { QuestionItem } from '~/types/questions.types'
+
+type DashboardQuestionsPageContext = {
+  existedPlayerIds?: string[]
+}
+
+const defaultContext: DashboardQuestionsPageContext = {
+  existedPlayerIds: []
+}
+
+export const DashboardQuestionsPageContext = React.createContext<DashboardQuestionsPageContext>(defaultContext)
 
 export default function DashboardQuestionsPage() {
   const { isAuthenticated } = React.useContext(AppContext)
@@ -39,9 +52,16 @@ export default function DashboardQuestionsPage() {
   const [currentQuestion, setCurrentQuestion] = React.useState<QuestionItem | null>(null)
   const [currentDeletingId, setCurrentDeletingId] = React.useState<string | null>(null)
 
+  const searchQuery = useSearchQuery()
+  const page = searchQuery.page
+
   const getQuestionsQuery = useQuery({
-    queryKey: ['get-questions'],
-    queryFn: () => questionsApis.findMany(),
+    queryKey: ['get-questions', { page }],
+    queryFn: () =>
+      questionsApis.findMany({
+        page,
+        limit: '24'
+      }),
     enabled: isAuthenticated
   })
 
@@ -49,8 +69,12 @@ export default function DashboardQuestionsPage() {
     () => getQuestionsQuery.data?.data.data.questions ?? [],
     [getQuestionsQuery.data?.data.data.questions]
   )
-
   const totalQuestions = getQuestionsQuery.data?.data.data.pagination.totalRows ?? 0
+  const totalPages = getQuestionsQuery.data?.data.data.pagination.totalPages ?? 0
+  const existedPlayerIds = React.useMemo(
+    () => getQuestionsQuery.data?.data.data.existedPlayerIds ?? [],
+    [getQuestionsQuery.data?.data.data.existedPlayerIds]
+  )
 
   const deleteQuestionMutation = useMutation({
     mutationKey: ['delete-question'],
@@ -67,7 +91,7 @@ export default function DashboardQuestionsPage() {
   }
 
   return (
-    <React.Fragment>
+    <DashboardQuestionsPageContext.Provider value={{ existedPlayerIds }}>
       <div className='space-y-8'>
         <div className='flex justify-between items-center'>
           <h1 className='text-xl font-medium tracking-tight'>Quản lý câu hỏi</h1>
@@ -124,6 +148,13 @@ export default function DashboardQuestionsPage() {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+        {/* Phân trang */}
+        {!getQuestionsQuery.isFetching && totalPages > 1 && <PaginationV2 totalPages={totalPages} />}
+        {getQuestionsQuery.isFetching && (
+          <div className='flex justify-center p-10'>
+            <Loader2 className='size-10 stroke-1 animate-spin' />
           </div>
         )}
       </div>
@@ -185,6 +216,6 @@ export default function DashboardQuestionsPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </React.Fragment>
+    </DashboardQuestionsPageContext.Provider>
   )
 }

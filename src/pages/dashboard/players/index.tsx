@@ -130,7 +130,7 @@ export default function DashboardPlayersPage() {
           <div className='mt-4'>
             <CreatePlayerForm
               onCreateSuccess={() => {
-                setIsCreatingNew(false)
+                // setIsCreatingNew(false)
                 getPlayersQuery.refetch()
               }}
             />
