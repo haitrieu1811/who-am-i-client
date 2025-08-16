@@ -7,6 +7,17 @@ import AnswerInfo from '~/components/game/answer-info'
 import SelectAnswer from '~/components/game/select-answer'
 import { ModeToggle } from '~/components/mode-toggle'
 import PlayerItem from '~/components/player-item'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from '~/components/ui/alert-dialog'
 import { Avatar, AvatarImage } from '~/components/ui/avatar'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
@@ -63,7 +74,7 @@ export default function Game() {
         <div className='space-y-6'>
           {/* Hình ảnh gợi ý */}
           <div
-            className={cn('flex justify-center bg-background py-10 rounded-md', {
+            className={cn('flex justify-center bg-background py-10 rounded-md pointer-events-none', {
               'blur-md': !isEnd
             })}
           >
@@ -94,10 +105,26 @@ export default function Game() {
               </div>
             </div>
             <div className='flex items-center space-x-2'>
-              <Button variant='outline' onClick={handleContinue}>
-                <ArrowLeftRight className='size-4' />
-                Đổi câu hỏi khác
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant='outline'>
+                    <ArrowLeftRight className='size-4' />
+                    Đổi câu hỏi khác
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Đổi câu hỏi khác?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Bạn sẽ bỏ qua câu hỏi này và bắt đầu lại với câu hỏi khác.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Hủy bỏ</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleContinue}>Tiếp tục</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
               <ModeToggle />
             </div>
           </div>
