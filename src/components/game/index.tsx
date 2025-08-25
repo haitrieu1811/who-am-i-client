@@ -43,6 +43,7 @@ export default function Game() {
   const [isSelecting, setIsSelecting] = React.useState<boolean>(false)
   const [isShowResult, setIsShowResult] = React.useState<boolean>(true)
   const [isSurrender, setIsSurrender] = React.useState<boolean>(false)
+  const [step, setStep] = React.useState<'league' | 'team' | 'player'>('league') // Các bước chọn đáp án
 
   const { handleResetSelectPlayer } = React.useContext(AppContext)
 
@@ -62,6 +63,10 @@ export default function Game() {
   const isLose = answers.length === MAX_ANSWER_TURN
   const isEnd = isWin || isLose
 
+  React.useEffect(() => {
+    if (isEnd) setStep('league')
+  }, [isEnd])
+
   const handleStart = () => {
     setAnswers([])
     getRandomQuestion.refetch()
@@ -77,7 +82,7 @@ export default function Game() {
 
   return (
     <React.Fragment>
-      <div className='sm:w-full md:w-lg mx-auto p-6 bg-muted min-h-screen'>
+      <div className='sm:w-full md:w-lg mx-auto p-4 md:p-6 bg-muted min-h-screen'>
         <div className='space-y-6'>
           {/* Hình ảnh gợi ý */}
           <div
@@ -174,8 +179,8 @@ export default function Game() {
                       {answer.name}
                     </div>
                   </div>
-                  <div className='grid grid-cols-12 gap-2 md:gap-6'>
-                    <div className='col-span-3 md:col-span-2'>
+                  <div className='grid grid-cols-12 gap-1 md:gap-6'>
+                    <div className='col-span-2'>
                       <AnswerInfo isTrue={answer.nation._id === correctAnswer?.nation._id}>
                         <Tooltip>
                           <TooltipTrigger>
@@ -185,7 +190,7 @@ export default function Game() {
                         </Tooltip>
                       </AnswerInfo>
                     </div>
-                    <div className='col-span-3 md:col-span-2'>
+                    <div className='col-span-2'>
                       <AnswerInfo isTrue={answer.league._id === correctAnswer?.league._id}>
                         <Tooltip>
                           <TooltipTrigger>
@@ -195,7 +200,7 @@ export default function Game() {
                         </Tooltip>
                       </AnswerInfo>
                     </div>
-                    <div className='col-span-3 md:col-span-2'>
+                    <div className='col-span-2'>
                       <AnswerInfo isTrue={answer.team._id === correctAnswer?.team._id}>
                         <Tooltip>
                           <TooltipTrigger>
@@ -205,7 +210,7 @@ export default function Game() {
                         </Tooltip>
                       </AnswerInfo>
                     </div>
-                    <div className='col-span-3 md:col-span-2'>
+                    <div className='col-span-2'>
                       <AnswerInfo isTrue={answer.position === correctAnswer?.position}>
                         <Tooltip>
                           <TooltipTrigger>
@@ -232,7 +237,7 @@ export default function Game() {
                         </Tooltip>
                       </AnswerInfo>
                     </div>
-                    <div className='col-span-3 md:col-span-2'>
+                    <div className='col-span-2'>
                       <AnswerInfo
                         isTrue={answer.age === correctAnswer?.age}
                         hintMessage={correctAnswer && answer.age < correctAnswer.age ? 'Lớn hơn' : 'Nhỏ hơn'}
@@ -245,7 +250,7 @@ export default function Game() {
                         </Tooltip>
                       </AnswerInfo>
                     </div>
-                    <div className='col-span-3 md:col-span-2'>
+                    <div className='col-span-2'>
                       <AnswerInfo
                         isTrue={answer.shirtNumber === correctAnswer?.shirtNumber}
                         hintMessage={
@@ -307,15 +312,17 @@ export default function Game() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      {/* Chọn đáp án */}
+      {/* Đưa ra đáp án */}
       <Dialog open={isSelecting} onOpenChange={setIsSelecting}>
-        <DialogContent className='max-h-[90vh] overflow-y-auto min-w-3/4'>
+        <DialogContent className='max-h-[80vh] md:max-h-[90vh] overflow-y-auto min-w-3/4'>
           <DialogHeader>
-            <DialogTitle>Chọn đáp án</DialogTitle>
-            <DialogDescription>Chọn đáp án</DialogDescription>
+            <DialogTitle>Đưa ra đáp án</DialogTitle>
+            <DialogDescription>Tìm cầu thủ và đưa ra đáp án cho câu hỏi</DialogDescription>
           </DialogHeader>
           <div className='mt-4'>
             <SelectAnswer
+              step={step}
+              setStep={setStep}
               onChange={(data) => {
                 setAnswers((prevState) => [data, ...prevState])
                 setIsSelecting(false)
