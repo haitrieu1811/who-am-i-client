@@ -1,10 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
 import React from 'react'
 
-import nationsApis from '~/apis/nations.apis'
-import type { PaginationReqQuery } from '~/types/utils.types'
+import nationsApis, { type GetNationsReqQuery } from '~/apis/nations.apis'
 
-type UseNationsProps = PaginationReqQuery & {
+type UseNationsProps = GetNationsReqQuery & {
   enabled?: boolean
 }
 

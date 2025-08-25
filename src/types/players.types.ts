@@ -1,4 +1,7 @@
 import type { PlayerPosition } from '~/constants/enum'
+import type { LeagueItem } from '~/types/leagues.types'
+import type { NationItem } from '~/types/nations.types'
+import type { TeamItem } from '~/types/teams.types'
 import type { PaginationResponse, SuccessResponse } from '~/types/utils.types'
 
 export type PlayerItem = {
@@ -11,28 +14,9 @@ export type PlayerItem = {
   shirtNumber: number
   position: PlayerPosition
   age: number
-  nation: {
-    _id: string
-    flag: string
-    name: string
-    createdAt: string
-    updatedAt: string
-  }
-  league: {
-    _id: string
-    logo: string
-    name: string
-    createdAt: string
-    updatedAt: string
-  }
-  team: {
-    _id: string
-    logo: string
-    leagueId: string
-    name: string
-    createdAt: string
-    updatedAt: string
-  }
+  nation: NationItem
+  league: LeagueItem
+  team: TeamItem
   dateOfBirth: string
   createdAt: string
   updatedAt: string

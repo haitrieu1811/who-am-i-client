@@ -78,7 +78,7 @@ export default function PlayerItem({
           <div className='text-center text-sm font-medium'>{playerData.name}</div>
           <div className='flex justify-center items-center space-x-1'>
             <Avatar className='size-4'>
-              <AvatarImage src={playerData.team.logo} alt={playerData.team.name} />
+              <AvatarImage src={playerData.team.logo.url} alt={playerData.team.name} />
             </Avatar>
             <div className='text-xs text-center'>{playerData.team.name}</div>
           </div>
@@ -99,7 +99,7 @@ export default function PlayerItem({
           </div>
           <div className='flex items-center space-x-1'>
             <Avatar className='size-4'>
-              <AvatarImage src={playerData.nation.flag} alt={playerData.nation.name} />
+              <AvatarImage src={playerData.nation.flag.url} alt={playerData.nation.name} />
             </Avatar>
             <div className='text-xs text-muted-foreground'>{playerData.nation.name}</div>
           </div>

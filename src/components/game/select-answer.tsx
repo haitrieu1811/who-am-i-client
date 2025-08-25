@@ -31,7 +31,10 @@ export default function SelectAnswer({ onChange }: SelectAnswerProps) {
   })
 
   return (
-    <div ref={containerRef} className='grid grid-cols-12 gap-6'>
+    <div
+      ref={containerRef}
+      className='grid grid-cols-12 gap-6 w-[1000px] md:w-auto max-w-[1000px] md:max-w-none overflow-x-auto'
+    >
       {/* Chọn giải đấu */}
       <div className='col-span-4 space-y-4'>
         <h3 className='text-center font-semibold'>Giải đấu</h3>
@@ -91,7 +94,7 @@ export default function SelectAnswer({ onChange }: SelectAnswerProps) {
             <div className='grid grid-cols-12 gap-4'>
               {players.map((player) => (
                 <div key={player._id} className='col-span-6'>
-                  <SelectItem name={player.name} logo={player.team.logo} onClick={() => onChange(player)} />
+                  <SelectItem name={player.name} logo={player.team.logo.url} onClick={() => onChange(player)} />
                 </div>
               ))}
             </div>

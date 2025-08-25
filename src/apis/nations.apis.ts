@@ -6,8 +6,12 @@ export type CreateNationResponse = SuccessResponse<{
   nation: NationItem
 }>
 
+export type GetNationsReqQuery = PaginationReqQuery & {
+  name?: string
+}
+
 const nationsApis = {
-  findMany(params?: PaginationReqQuery) {
+  findMany(params?: GetNationsReqQuery) {
     return http.get<
       SuccessResponse<{
         nations: NationItem[]

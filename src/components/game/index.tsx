@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { ArrowLeftRight, Reply, RotateCcw } from 'lucide-react'
+import { ArrowLeftRight, Flag, Reply } from 'lucide-react'
 import React from 'react'
 
 import questionsApis from '~/apis/questions.apis'
@@ -42,6 +42,7 @@ export default function Game() {
   const [answers, setAnswers] = React.useState<PlayerItemType[]>([])
   const [isSelecting, setIsSelecting] = React.useState<boolean>(false)
   const [isShowResult, setIsShowResult] = React.useState<boolean>(true)
+  const [isSurrender, setIsSurrender] = React.useState<boolean>(false)
 
   const { handleResetSelectPlayer } = React.useContext(AppContext)
 
@@ -61,11 +62,17 @@ export default function Game() {
   const isLose = answers.length === MAX_ANSWER_TURN
   const isEnd = isWin || isLose
 
-  const handleContinue = () => {
+  const handleStart = () => {
     setAnswers([])
     getRandomQuestion.refetch()
     handleResetSelectPlayer()
     setIsShowResult(true)
+  }
+
+  const handleSurrender = () => {
+    if (!correctAnswer) return
+    setIsSurrender(true)
+    setAnswers((prevState) => [correctAnswer, ...prevState])
   }
 
   return (
@@ -83,8 +90,8 @@ export default function Game() {
             </Avatar>
           </div>
           {/* Thông tin và các nút thao tác */}
-          <div className='flex justify-between items-center'>
-            <div className='space-y-2'>
+          <div className='flex flex-wrap justify-between items-center space-y-4 md:space-y-0'>
+            <div className='space-y-2 w-full md:w-auto'>
               <div className='flex items-center space-x-2'>
                 <Label>Cấp độ:</Label>
                 <Badge
@@ -104,12 +111,12 @@ export default function Game() {
                 <Badge variant='outline'>Còn {MAX_ANSWER_TURN - answers.length} lượt</Badge>
               </div>
             </div>
-            <div className='flex items-center space-x-2'>
+            <div className='flex justify-end md:justify-normal items-center space-x-2 w-full md:w-auto'>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button variant='outline'>
                     <ArrowLeftRight className='size-4' />
-                    Đổi câu hỏi khác
+                    Đổi câu hỏi
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
@@ -121,15 +128,34 @@ export default function Game() {
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Hủy bỏ</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleContinue}>Tiếp tục</AlertDialogAction>
+                    <AlertDialogAction onClick={handleStart}>Tiếp tục</AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
               <ModeToggle />
             </div>
           </div>
-          <div className='flex justify-end'>
-            <Button disabled={isEnd} onClick={() => setIsSelecting(true)}>
+          {/* Đưa ra đáp án */}
+          <div className='flex flex-wrap justify-end space-x-0 md:space-x-2 space-y-2 md:space-y-0'>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button disabled={isEnd} variant='outline' className='w-full md:w-auto'>
+                  <Flag className='size-4' />
+                  Đầu hàng
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Đầu hàng?</AlertDialogTitle>
+                  <AlertDialogDescription>Bạn sẽ được xem đáp án và bỏ qua câu hỏi này.</AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Hủy bỏ</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleSurrender}>Tiếp tục</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+            <Button disabled={isEnd} className='w-full md:w-auto' onClick={() => setIsSelecting(true)}>
               <Reply className='size-4' />
               Đưa ra đáp án
             </Button>
@@ -148,38 +174,38 @@ export default function Game() {
                       {answer.name}
                     </div>
                   </div>
-                  <div className='grid grid-cols-12 gap-6'>
-                    <div className='col-span-2'>
+                  <div className='grid grid-cols-12 gap-2 md:gap-6'>
+                    <div className='col-span-3 md:col-span-2'>
                       <AnswerInfo isTrue={answer.nation._id === correctAnswer?.nation._id}>
                         <Tooltip>
                           <TooltipTrigger>
-                            <img src={answer.nation.flag} />
+                            <img src={answer.nation.flag.url} />
                           </TooltipTrigger>
                           <TooltipContent>Quốc tịch: {answer.nation.name}</TooltipContent>
                         </Tooltip>
                       </AnswerInfo>
                     </div>
-                    <div className='col-span-2'>
+                    <div className='col-span-3 md:col-span-2'>
                       <AnswerInfo isTrue={answer.league._id === correctAnswer?.league._id}>
                         <Tooltip>
                           <TooltipTrigger>
-                            <img src={answer.league.logo} />
+                            <img src={answer.league.logo.url} />
                           </TooltipTrigger>
                           <TooltipContent>Giải đấu: {answer.league.name}</TooltipContent>
                         </Tooltip>
                       </AnswerInfo>
                     </div>
-                    <div className='col-span-2'>
+                    <div className='col-span-3 md:col-span-2'>
                       <AnswerInfo isTrue={answer.team._id === correctAnswer?.team._id}>
                         <Tooltip>
                           <TooltipTrigger>
-                            <img src={answer.team.logo} />
+                            <img src={answer.team.logo.url} />
                           </TooltipTrigger>
                           <TooltipContent>Câu lạc bộ: {answer.team.name}</TooltipContent>
                         </Tooltip>
                       </AnswerInfo>
                     </div>
-                    <div className='col-span-2'>
+                    <div className='col-span-3 md:col-span-2'>
                       <AnswerInfo isTrue={answer.position === correctAnswer?.position}>
                         <Tooltip>
                           <TooltipTrigger>
@@ -206,7 +232,7 @@ export default function Game() {
                         </Tooltip>
                       </AnswerInfo>
                     </div>
-                    <div className='col-span-2'>
+                    <div className='col-span-3 md:col-span-2'>
                       <AnswerInfo
                         isTrue={answer.age === correctAnswer?.age}
                         hintMessage={correctAnswer && answer.age < correctAnswer.age ? 'Lớn hơn' : 'Nhỏ hơn'}
@@ -219,7 +245,7 @@ export default function Game() {
                         </Tooltip>
                       </AnswerInfo>
                     </div>
-                    <div className='col-span-2'>
+                    <div className='col-span-3 md:col-span-2'>
                       <AnswerInfo
                         isTrue={answer.shirtNumber === correctAnswer?.shirtNumber}
                         hintMessage={
@@ -264,20 +290,20 @@ export default function Game() {
             <DialogTitle>Kết quả của câu hỏi</DialogTitle>
             <DialogDescription
               className={cn({
-                'text-green-500': isWin,
+                'text-green-500': isWin && !isSurrender,
                 'text-red-500': isLose && !isWin
               })}
             >
-              {isWin && 'Bạn đã đoán đúng!'}
+              {isWin && !isSurrender && 'Bạn đã đoán đúng!'}
               {isLose && !isWin && 'Bạn đã đoán không chính xác!'}
             </DialogDescription>
           </DialogHeader>
           {correctAnswer && <PlayerItem playerData={correctAnswer} />}
           <DialogFooter>
-            <Button onClick={handleContinue}>
-              <RotateCcw className='size-4' />
+            <Button variant='secondary' onClick={handleStart}>
               Chơi tiếp
             </Button>
+            <Button onClick={() => setIsShowResult(false)}>Đóng lại</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

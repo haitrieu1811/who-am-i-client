@@ -14,19 +14,13 @@ export const playerSchema = z.object({
     ],
     'Vị trí thi đấu không hợp lệ.'
   ),
-  nationId: z.string('Vui lòng chọn quốc tịch.'),
-  leagueId: z.string('Vui lòng chọn giải đấu.'),
-  teamId: z.string('Vui lòng chọn câu lạc bộ.'),
   dateOfBirth: z.date('Ngày không hợp lệ.')
 })
 
 export const createPlayerSchema = playerSchema.pick({
-  leagueId: true,
   name: true,
-  nationId: true,
   position: true,
   shirtNumber: true,
-  teamId: true,
   dateOfBirth: true
 })
 

@@ -19,7 +19,7 @@ import {
 } from '~/components/ui/alert-dialog'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '~/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '~/components/ui/dialog'
 import { PlayerPosition } from '~/constants/enum'
 import useDebounce from '~/hooks/use-debounce'
 import usePlayers from '~/hooks/use-players'
@@ -98,7 +98,7 @@ export default function DashboardPlayersPage() {
         {totalPlayers > 0 && !getPlayersQuery.isFetching && (
           <div className='grid grid-cols-12 gap-4'>
             {players.map((player) => (
-              <div key={player._id} className='col-span-2'>
+              <div key={player._id} className='col-span-6 md:col-span-2'>
                 <PlayerItem
                   playerData={player}
                   onDetail={() => setCurrentPlayer(player)}
@@ -126,14 +126,10 @@ export default function DashboardPlayersPage() {
         <DialogContent className='max-h-[90vh] overflow-y-auto pb-0'>
           <DialogHeader>
             <DialogTitle>Thêm cầu thủ mới</DialogTitle>
+            <DialogDescription>Thêm cầu thủ mới vào dự án của bạn</DialogDescription>
           </DialogHeader>
           <div className='mt-4'>
-            <CreatePlayerForm
-              onCreateSuccess={() => {
-                // setIsCreatingNew(false)
-                getPlayersQuery.refetch()
-              }}
-            />
+            <CreatePlayerForm />
           </div>
         </DialogContent>
       </Dialog>

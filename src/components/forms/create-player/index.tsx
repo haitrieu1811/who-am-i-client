@@ -1,34 +1,33 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type { AxiosResponse } from 'axios'
 import { format } from 'date-fns'
-import { CalendarIcon, Loader2, PlusCircle, UploadCloud } from 'lucide-react'
+import { CalendarIcon, Filter, Loader2, UploadCloud } from 'lucide-react'
 import React from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
 import playersApis, { type CreatePlayerReqBody } from '~/apis/players.apis'
-import CreateNationForm from '~/components/forms/create-nation'
+import PlayerFilters from '~/components/forms/create-player/player-filters'
 import InputFile from '~/components/input-file'
-import { Avatar, AvatarImage } from '~/components/ui/avatar'
+import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
 import { Calendar } from '~/components/ui/calendar'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '~/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '~/components/ui/dialog'
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form'
 import { Input } from '~/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover'
 import { RadioGroup, RadioGroupItem } from '~/components/ui/radio-group'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 import { Skeleton } from '~/components/ui/skeleton'
 import { PlayerPosition } from '~/constants/enum'
-import useLeagues from '~/hooks/use-leagues'
-import useNations from '~/hooks/use-nations'
-import useTeams from '~/hooks/use-teams'
 import useUploadImage from '~/hooks/use-upload-image'
 import { cn } from '~/lib/utils'
 import { createPlayerSchema, type CreatePlayerSchema } from '~/rules/players.rules'
+import type { LeagueItem } from '~/types/leagues.types'
+import type { NationItem } from '~/types/nations.types'
 import type { CreatePlayerResponse, PlayerItem } from '~/types/players.types'
+import type { TeamItem } from '~/types/teams.types'
 
 type CreatePlayerFormProps = {
   playerData?: PlayerItem | null
@@ -37,10 +36,24 @@ type CreatePlayerFormProps = {
 }
 
 export default function CreatePlayerForm({ playerData, onCreateSuccess, onUpdateSuccess }: CreatePlayerFormProps) {
+  const queryClient = useQueryClient()
+
   const isUpdateMode = !!playerData
 
+  const [isOpenPlayerFilters, setIsOpenPlayerFilters] = React.useState<boolean>(false)
+
   const [avatarFile, setAvatarFile] = React.useState<File | null>(null)
-  const [isCreatingNewNation, setIsCreatingNewNation] = React.useState<boolean>(false)
+
+  const [nation, setNation] = React.useState<NationItem | undefined>(undefined)
+  const [league, setLeague] = React.useState<LeagueItem | undefined>(undefined)
+  const [team, setTeam] = React.useState<TeamItem | undefined>(undefined)
+
+  React.useEffect(() => {
+    if (!playerData) return
+    setNation(playerData.nation)
+    setLeague(playerData.league)
+    setTeam(playerData.team)
+  }, [playerData])
 
   const avatarPreview = React.useMemo(() => (avatarFile ? URL.createObjectURL(avatarFile) : null), [avatarFile])
 
@@ -48,40 +61,31 @@ export default function CreatePlayerForm({ playerData, onCreateSuccess, onUpdate
     resolver: zodResolver(createPlayerSchema),
     defaultValues: {
       name: playerData?.name ?? '',
-      nationId: playerData?.nation._id,
-      leagueId: playerData?.league._id,
-      teamId: playerData?.team._id,
       position: playerData?.position.toString(),
       shirtNumber: playerData?.shirtNumber.toString(),
       dateOfBirth: playerData?.dateOfBirth ? new Date(playerData.dateOfBirth) : new Date()
     }
   })
 
-  const leagueId = form.watch('leagueId')
-
-  const { nations, getNationsQuery } = useNations({
-    limit: '1000'
-  })
-  const { leagues } = useLeagues()
-  const { teams } = useTeams({
-    limit: '1000',
-    enabled: !!leagueId,
-    leagueId
-  })
   const { uploadImageMutation } = useUploadImage()
 
-  React.useEffect(() => {
-    form.resetField('teamId')
-  }, [form, leagueId])
+  // const handleReset = () => {
+  //   form.reset()
+  //   setAvatarFile(null)
+  //   setNation(undefined)
+  //   setLeague(undefined)
+  //   setTeam(undefined)
+  // }
 
   const createPlayerMutation = useMutation({
     mutationKey: ['create-player'],
     mutationFn: playersApis.insertOne,
     onSuccess: (data) => {
       toast.success(data.data.message)
-      // form.reset()
-      setAvatarFile(null)
       onCreateSuccess && onCreateSuccess(data)
+      queryClient.invalidateQueries({
+        queryKey: ['get-players']
+      })
     }
   })
 
@@ -99,11 +103,15 @@ export default function CreatePlayerForm({ playerData, onCreateSuccess, onUpdate
   const isPending = uploadImageMutation.isPending || createPlayerMutation.isPending || updatePlayerMutation.isPending
 
   const handleSubmit = form.handleSubmit(async (data) => {
+    if (!nation || !league || !team) return
     const body: CreatePlayerReqBody = {
       ...data,
       avatar: playerData?.avatar._id ?? null,
       shirtNumber: Number(data.shirtNumber),
-      position: Number(data.position)
+      position: Number(data.position),
+      nationId: nation._id,
+      leagueId: league._id,
+      teamId: team._id
     }
     if (avatarFile) {
       const form = new FormData()
@@ -140,7 +148,7 @@ export default function CreatePlayerForm({ playerData, onCreateSuccess, onUpdate
             >
               <Button type='button' variant='outline'>
                 <UploadCloud className='size-4' />
-                {!avatarFile && !isUpdateMode && 'Tải ảnh đại diện lên'}
+                {!avatarFile && !isUpdateMode && 'Tải ảnh đại diện'}
                 {avatarFile && !isUpdateMode && 'Thay đổi ảnh đại diện'}
                 {isUpdateMode && 'Thay đổi ảnh đại diện'}
               </Button>
@@ -168,7 +176,7 @@ export default function CreatePlayerForm({ playerData, onCreateSuccess, onUpdate
               <FormItem>
                 <FormLabel>Số áo</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input defaultValue={field.value} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -208,98 +216,54 @@ export default function CreatePlayerForm({ playerData, onCreateSuccess, onUpdate
               </FormItem>
             )}
           />
-          {/* Quốc tịch */}
-          <div className='space-y-2'>
-            <FormField
-              control={form.control}
-              name='nationId'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Quốc tịch</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger className='w-full'>
-                        <SelectValue placeholder='Vui lòng chọn quốc tịch' />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {nations.map((nation) => (
-                        <SelectItem key={nation._id} value={nation._id}>
-                          <Avatar className='size-4'>
-                            <AvatarImage src={nation.flag.url} alt={nation.name} />
-                          </Avatar>
-                          {nation.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className='flex justify-end'>
-              <Button type='button' variant='outline' size='sm' onClick={() => setIsCreatingNewNation(true)}>
-                <PlusCircle className='size-4' />
-                Thêm quốc gia mới
-              </Button>
+          {/* Quốc tịch, giải đấu, CLB */}
+          <div className='space-y-3 border-2 rounded-md p-4'>
+            <div className='flex flex-col space-y-2'>
+              {/* Quốc tịch */}
+              <Badge variant='outline' className='p-2 gap-2'>
+                <span>Quốc tịch:</span>
+                {nation && (
+                  <div className='inline-flex gap-1'>
+                    <img src={nation.flag.url} alt={nation.name} className='size-4 object-contain' />
+                    <span className='text-xs font-medium'>{nation.name}</span>
+                  </div>
+                )}
+                {!nation && form.formState.isSubmitted && (
+                  <span className='text-destructive'>Vui lòng chọn quốc tịch</span>
+                )}
+              </Badge>
+              {/* Giải đấu */}
+              <Badge variant='outline' className='p-2 gap-2'>
+                <span>Giải đấu:</span>
+                {league && (
+                  <div className='inline-flex gap-1'>
+                    <img src={league.logo.url} alt={league.name} className='size-4 object-contain' />
+                    <span className='text-xs font-medium'>{league.name}</span>
+                  </div>
+                )}
+                {!league && form.formState.isSubmitted && (
+                  <span className='text-destructive'>Vui lòng chọn giải đấu</span>
+                )}
+              </Badge>
+              {/* CLB */}
+              <Badge variant='outline' className='p-2 gap-2'>
+                <span>Câu lạc bộ:</span>
+                {team && (
+                  <div className='inline-flex gap-1'>
+                    <img src={team.logo.url} alt={team.name} className='size-4 object-contain' />
+                    <span className='text-xs font-medium'>{team.name}</span>
+                  </div>
+                )}
+                {!team && form.formState.isSubmitted && (
+                  <span className='text-destructive'>Vui lòng chọn câu lạc bộ</span>
+                )}
+              </Badge>
             </div>
+            <Button type='button' variant='outline' onClick={() => setIsOpenPlayerFilters(true)}>
+              <Filter className='size-4' />
+              Bộ lọc cầu thủ
+            </Button>
           </div>
-          {/* Giải đấu */}
-          <FormField
-            control={form.control}
-            name='leagueId'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Giải đấu</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger className='w-full'>
-                      <SelectValue placeholder='Vui lòng chọn giải đấu' />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {leagues.map((league) => (
-                      <SelectItem key={league._id} value={league._id}>
-                        <Avatar className='size-4'>
-                          <AvatarImage src={league.logo.url} alt={league.name} />
-                        </Avatar>
-                        {league.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          {/* Câu lạc bộ */}
-          <FormField
-            control={form.control}
-            name='teamId'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Câu lạc bộ</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger className='w-full'>
-                      <SelectValue placeholder='Vui lòng chọn câu lạc bộ' />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {teams.map((team) => (
-                      <SelectItem key={team._id} value={team._id}>
-                        <Avatar className='size-4'>
-                          <AvatarImage src={team.logo.url} alt={team.name} />
-                        </Avatar>
-                        {team.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
           {/* Vị trí thi đấu */}
           <FormField
             control={form.control}
@@ -333,7 +297,7 @@ export default function CreatePlayerForm({ playerData, onCreateSuccess, onUpdate
                     ].map((item) => (
                       <FormItem key={item.value} className='flex items-center gap-3'>
                         <FormControl>
-                          <RadioGroupItem value={item.value} />
+                          <RadioGroupItem value={item.value} checked={item.value === form.watch('position')} />
                         </FormControl>
                         <FormLabel className='font-normal'>
                           <div
@@ -364,20 +328,21 @@ export default function CreatePlayerForm({ playerData, onCreateSuccess, onUpdate
           </div>
         </form>
       </Form>
-      {/* Thêm quốc gia mới */}
-      <Dialog open={isCreatingNewNation} onOpenChange={setIsCreatingNewNation}>
-        <DialogContent>
+      {/* Chọn quốc tịch, giải đấu, CLB */}
+      <Dialog open={isOpenPlayerFilters} onOpenChange={setIsOpenPlayerFilters}>
+        <DialogContent className='max-h-[90vh] overflow-y-auto'>
           <DialogHeader>
-            <DialogTitle>Thêm quốc gia mới</DialogTitle>
+            <DialogTitle>Bộ lọc cầu thủ</DialogTitle>
+            <DialogDescription>Chọn quốc tịch, giải đấu, câu lạc bộ</DialogDescription>
           </DialogHeader>
-          <div className='mt-4'>
-            <CreateNationForm
-              onCreateSuccess={() => {
-                setIsCreatingNewNation(false)
-                getNationsQuery.refetch()
-              }}
-            />
-          </div>
+          <PlayerFilters
+            defaultNation={nation}
+            defaultLeague={league}
+            defaultTeam={team}
+            onNationChange={setNation}
+            onLeagueChange={setLeague}
+            onTeamChange={setTeam}
+          />
         </DialogContent>
       </Dialog>
     </React.Fragment>

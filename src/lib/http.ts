@@ -7,29 +7,28 @@ import {
   clearAuthStorage,
   getAccessTokenFromStorage,
   getRefreshTokenFromStorage,
-  getUserFromStorage,
   setAccessTokenToStorage,
   setRefreshTokenToStorage,
   setUserToStorage
 } from '~/lib/auth'
 import { isExpiredTokenError, isUnauthorizedError } from '~/lib/utils'
-import type { AuthResponse, OriginalUser } from '~/types/users.types'
+import type { AuthResponse } from '~/types/users.types'
 import type { ErrorResponse } from '~/types/utils.types'
 
 class Http {
   instance: AxiosInstance
   private accessToken: string
   private refreshToken: string
-  private user: OriginalUser | null
+  // private user: OriginalUser | null
   private refreshTokenRequest: Promise<string> | null
 
   constructor() {
     this.accessToken = getAccessTokenFromStorage()
     this.refreshToken = getRefreshTokenFromStorage()
-    this.user = getUserFromStorage()
+    // this.user = getUserFromStorage()
     this.refreshTokenRequest = null
     this.instance = axios.create({
-      baseURL: 'http://localhost:4000',
+      baseURL: 'https://who-am-i-server.onrender.com',
       timeout: 10000,
       headers: {
         'Content-Type': 'application/json'
@@ -59,7 +58,7 @@ class Http {
           setUserToStorage(user)
           this.accessToken = accessToken
           this.refreshToken = refreshToken
-          this.user = user
+          // this.user = user
         }
         return response
       },
@@ -92,7 +91,7 @@ class Http {
           clearAuthStorage()
           this.accessToken = ''
           this.refreshToken = ''
-          this.user = null
+          // this.user = null
           toast.error(error.response?.data.errors?.message || error.response?.data.errors.message)
         }
         return Promise.reject(error)
