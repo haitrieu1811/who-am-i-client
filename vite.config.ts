@@ -9,6 +9,10 @@ export default defineConfig({
   server: {
     port: 3000
   },
+  preview: {
+    port: 3001,
+    allowedHosts: [process.env.VITE_CLIENT_HOST!]
+  },
   css: {
     devSourcemap: true
   },
