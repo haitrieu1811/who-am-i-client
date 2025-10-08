@@ -28,7 +28,7 @@ class Http {
     // this.user = getUserFromStorage()
     this.refreshTokenRequest = null
     this.instance = axios.create({
-      baseURL: 'https://who-am-i-server.onrender.com',
+      baseURL: import.meta.env.VITE_SERVER_HOST,
       timeout: 10000,
       headers: {
         'Content-Type': 'application/json'
