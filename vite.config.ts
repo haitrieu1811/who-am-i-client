@@ -11,7 +11,7 @@ export default defineConfig({
   },
   preview: {
     port: 3001,
-    allowedHosts: [process.env.VITE_CLIENT_HOST!]
+    allowedHosts: ['whoami.tranhaitrieu.com']
   },
   css: {
     devSourcemap: true
